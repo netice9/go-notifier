@@ -46,4 +46,26 @@ var _ = Describe("Notifier", func() {
 			})
 		})
 	})
+
+	Context("when there is already one value being sent to listeners", func() {
+		BeforeEach(func() {
+			n.Notify("test1")
+		})
+
+		Context("When a new listener is added", func() {
+			var l1 chan interface{}
+
+			BeforeEach(func() {
+				l1 = make(chan interface{})
+				n.AddListener(l1)
+			})
+
+			It("should send the last notification to the new listener", func(done Done) {
+				notification := <-l1
+				Expect(notification).To(Equal("test1"))
+				close(done)
+			})
+		})
+	})
+
 })
