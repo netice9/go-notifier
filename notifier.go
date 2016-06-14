@@ -29,11 +29,11 @@ func (n *Notifier) Notify(value interface{}) {
 func (n *Notifier) AddListener(listenerChannel chan interface{}) {
 	n.Lock()
 	defer n.Unlock()
-	for _, existing := range n.listeners {
-		if existing == listenerChannel {
-			return
-		}
-	}
+	// for _, existing := range n.listeners {
+	// 	if existing == listenerChannel {
+	// 		return
+	// 	}
+	// }
 	n.listeners = append(n.listeners, listenerChannel)
 	if n.lastNotification != nil {
 		last := *n.lastNotification
