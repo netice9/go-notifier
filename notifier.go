@@ -33,14 +33,10 @@ func (n *Notifier) Notify(value interface{}) {
 
 }
 
-func (n *Notifier) AddListener(listenerChannel chan interface{}) {
+func (n *Notifier) AddListener(capacity int) chan interface{} {
+	listenerChannel := make(chan interface{}, capacity)
 	n.Lock()
 	defer n.Unlock()
-	for _, existing := range n.listeners {
-		if existing == listenerChannel {
-			return
-		}
-	}
 	n.listeners = append(n.listeners, listenerChannel)
 	last := n.lastNotification
 	go func() {
@@ -51,6 +47,7 @@ func (n *Notifier) AddListener(listenerChannel chan interface{}) {
 		}()
 		listenerChannel <- last
 	}()
+	return listenerChannel
 }
 
 func (n *Notifier) RemoveListener(listenerChannel chan interface{}) {
@@ -63,6 +60,7 @@ func (n *Notifier) RemoveListener(listenerChannel chan interface{}) {
 		}
 	}
 	n.listeners = filtered
+	close(listenerChannel)
 }
 
 func (n *Notifier) Close() {

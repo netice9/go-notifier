@@ -22,8 +22,7 @@ var _ = Describe("Notifier", func() {
 	})
 
 	It("should notify listeners of changes", func(done Done) {
-		c := make(chan interface{})
-		n.AddListener(c)
+		c := n.AddListener(0)
 		notification := <-c
 		Expect(notification).To(Equal("first"))
 		close(done)
@@ -34,8 +33,7 @@ var _ = Describe("Notifier", func() {
 		var l1 chan interface{}
 
 		BeforeEach(func() {
-			l1 = make(chan interface{})
-			n.AddListener(l1)
+			l1 = n.AddListener(0)
 		})
 
 		Describe("RemoveListener()", func() {
@@ -55,8 +53,7 @@ var _ = Describe("Notifier", func() {
 			var l1 chan interface{}
 
 			BeforeEach(func() {
-				l1 = make(chan interface{})
-				n.AddListener(l1)
+				l1 = n.AddListener(0)
 			})
 
 			It("should send the last notification to the new listener", func(done Done) {
