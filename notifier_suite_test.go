@@ -18,15 +18,14 @@ var _ = Describe("Notifier", func() {
 	var n *notifier.Notifier
 
 	BeforeEach(func() {
-		n = notifier.NewNotifier()
+		n = notifier.NewNotifier("first")
 	})
 
 	It("should notify listeners of changes", func(done Done) {
 		c := make(chan interface{})
 		n.AddListener(c)
-		n.Notify("test")
 		notification := <-c
-		Expect(notification).To(Equal("test"))
+		Expect(notification).To(Equal("first"))
 		close(done)
 	})
 
