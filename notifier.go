@@ -44,6 +44,11 @@ func (n *Notifier) AddListener(listenerChannel chan interface{}) {
 	n.listeners = append(n.listeners, listenerChannel)
 	last := n.lastNotification
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				// ignore?
+			}
+		}()
 		listenerChannel <- last
 	}()
 }
