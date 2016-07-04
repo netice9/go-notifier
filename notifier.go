@@ -16,33 +16,34 @@ func NewNotifier(firstNotification interface{}) *Notifier {
 	}
 }
 
-func nonBlockingSendToChannel(chn chan interface{}, val interface{}) {
-	// recover in the case of sending to closed channel
-	defer func() {
-		if r := recover(); r != nil {
-			// ignore?
-		}
-	}()
-
-	select {
-	case chn <- val:
-		// everything is ok
-	default:
-		// previous value is blocking the channel, remove it!
-		select {
-		case <-chn:
-			// removed value, all clear to send!
-			chn <- val
-		default:
-			// receiver read it, send it now!
-			chn <- val
-		}
-	}
-
-}
-
 // Notify notifies current value to all listeners
 func (n *Notifier) Notify(value interface{}) {
+
+	nonBlockingSendToChannel := func(chn chan interface{}, val interface{}) {
+		// recover in the case of sending to closed channel
+		defer func() {
+			if r := recover(); r != nil {
+				// ignore?
+			}
+		}()
+
+		select {
+		case chn <- val:
+			// everything is ok
+		default:
+			// previous value is blocking the channel, remove it!
+			select {
+			case <-chn:
+				// removed value, all clear to send!
+				chn <- val
+			default:
+				// receiver read it, send it now!
+				chn <- val
+			}
+		}
+
+	}
+
 	n.Lock()
 	defer n.Unlock()
 
